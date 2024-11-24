@@ -33,3 +33,5 @@ function ensureAuthenticated(request: Request, response: Response, next: NextFun
     }
 }
 
+
+export { ensureAuthenticated }

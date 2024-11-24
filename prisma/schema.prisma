@@ -7,9 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  patient
-  doctor
+enum AgendamentoStatus {
+  agendado
+  cancelado
+  realizado
 }
 
 model User {
@@ -18,9 +19,11 @@ model User {
   email    String @unique
   password String
 
-  role        UserRole       @default(patient)
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime?      @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  paciente Paciente? @relation("PacienteUser") // Definindo o nome da relação
+  medico   Medico?   @relation("MedicoUser") // Definindo o nome da relação
 
   @@map("users")
 }
@@ -31,8 +34,11 @@ model Paciente {
   cpf            String        @unique
   dataNascimento DateTime
   telefone       String
-  email          String        @unique
+  userId         String        @unique
+  user           User          @relation("PacienteUser", fields: [userId], references: [id]) // Relacionamento com User
   agendamentos   Agendamento[]
+
+  @@map("pacientes")
 }
 
 model Medico {
@@ -41,23 +47,31 @@ model Medico {
   especialidade      String
   horarioAtendimento String
   disponibilidade    String
+  userId             String        @unique
+  user               User          @relation("MedicoUser", fields: [userId], references: [id]) // Relacionamento com User
   agendamentos       Agendamento[]
+
+  @@map("medicos")
 }
 
 model Agendamento {
-  id                String                 @id @default(uuid())
+  id                String              @id @default(uuid())
   pacienteId        String
   medicoId          String
   data              DateTime
-  status            String // 'agendado', 'cancelado', 'realizado', etc.
+  status            AgendamentoStatus // Usando o enum para o status
   paciente          Paciente            @relation(fields: [pacienteId], references: [id])
   medico            Medico              @relation(fields: [medicoId], references: [id])
   HistoricoConsulta HistoricoConsulta[]
+
+  @@map("agendamentos")
 }
 
 model HistoricoConsulta {
-  id            String         @id @default(uuid())
+  id            String      @id @default(uuid())
   agendamentoId String
   diagnostico   String
   agendamento   Agendamento @relation(fields: [agendamentoId], references: [id])
+
+  @@map("historico_consultas")
 }
