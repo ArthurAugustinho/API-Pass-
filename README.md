@@ -2,6 +2,8 @@ Crie um banco de dados postgresql
 
 RODE OS COMANDOS:
 
-''''npm i''''
+```bash
+npm i
 
-'''npx prisma migrate dev'''
+npx prisma migrate dev
+```
