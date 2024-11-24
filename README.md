@@ -1,4 +1,13 @@
-Crie um banco de dados postgresql
+CRIE UM BANCO DE DADOS POSTGRESQL
+## Variáveis de Ambiente
+
+Para rodar esse projeto, você vai precisar adicionar as seguintes variáveis de ambiente no seu .env
+
+`DATABASE_URL`
+
+`JWT_SECRET`
+
+`PORT`
 
 RODE OS COMANDOS:
 
