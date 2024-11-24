@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  patient
+  doctor
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  role        UserRole       @default(patient)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime?      @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Paciente {
+  id             String        @id @default(uuid())
+  nome           String
+  cpf            String        @unique
+  dataNascimento DateTime
+  telefone       String
+  email          String        @unique
+  agendamentos   Agendamento[]
+}
+
+model Medico {
+  id                 String        @id @default(uuid())
+  nome               String
+  especialidade      String
+  horarioAtendimento String
+  disponibilidade    String
+  agendamentos       Agendamento[]
+}
+
+model Agendamento {
+  id                String                 @id @default(uuid())
+  pacienteId        String
+  medicoId          String
+  data              DateTime
+  status            String // 'agendado', 'cancelado', 'realizado', etc.
+  paciente          Paciente            @relation(fields: [pacienteId], references: [id])
+  medico            Medico              @relation(fields: [medicoId], references: [id])
+  HistoricoConsulta HistoricoConsulta[]
+}
+
+model HistoricoConsulta {
+  id            String         @id @default(uuid())
+  agendamentoId String
+  diagnostico   String
+  agendamento   Agendamento @relation(fields: [agendamentoId], references: [id])
+}
